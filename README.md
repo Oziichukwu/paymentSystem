@@ -91,9 +91,17 @@ POST /api/auth
 ]
 } </b> <br>
 
+<b>{
+"username": "user",
+"password": "password",
+"roles": [
+"ADMIN"
+]
+} </b> <br>
+
 <b>Request Body to Login user "/login"</b> <br>
 <code>{
-"username": "user",
+"username": "admin",
 "password": "password"
 } </code> <br><br>
 <b>After Login A token is generated which can be used to then process payment  </b> <br>
@@ -108,5 +116,8 @@ POST /api/payments
 "studentId": 2,
 "paymentAmount": 311.00
 }
-} </code>
+} </code><br>
+
+<b>Note. The data.sql file contains sql insert queries to prepopulate the parent, student, student_parent and role tables. </b> <br>
+<br>
 

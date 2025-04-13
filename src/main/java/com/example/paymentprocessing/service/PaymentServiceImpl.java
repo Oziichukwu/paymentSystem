@@ -5,6 +5,7 @@ import com.example.paymentprocessing.data.dtos.RequestDtos.PaymentRequest;
 import com.example.paymentprocessing.data.models.Parent;
 import com.example.paymentprocessing.data.models.Payments;
 import com.example.paymentprocessing.data.models.Student;
+import com.example.paymentprocessing.data.models.StudentParent;
 import com.example.paymentprocessing.data.repository.ParentRepository;
 import com.example.paymentprocessing.data.repository.PaymentsRepository;
 import com.example.paymentprocessing.data.repository.StudentRepository;
@@ -23,8 +24,6 @@ import java.util.List;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
-
-
     private final ParentRepository parentRepo;
     private final StudentRepository studentRepo;
     private final PaymentsRepository paymentRepo;
@@ -43,7 +42,9 @@ public class PaymentServiceImpl implements PaymentService{
     @Override
     @Transactional
     public void processPayment(PaymentRequest paymentRequest) {
-
+        /**
+         *.This method process payment for unique and shared parent
+         */
         Parent payingParent = parentRepo.findById(paymentRequest.getParentId())
                 .orElseThrow(() -> new ParentNotFoundException("Parent not found"));
 
@@ -53,6 +54,9 @@ public class PaymentServiceImpl implements PaymentService{
         BigDecimal dynamicRate = BigDecimal.valueOf(0.05); // 5% fee
         BigDecimal adjustedAmount = paymentRequest.getPaymentAmount().multiply(BigDecimal.ONE.add(dynamicRate));
 
+        /**
+         *. Set the payment / ledger record
+         */
         Payments payment = new Payments();
         payment.setParentId(payingParent.getId());
         payment.setStudentId(student.getId());
@@ -60,6 +64,9 @@ public class PaymentServiceImpl implements PaymentService{
         payment.setAdjustedAmount(adjustedAmount);
         payment.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
+        /**
+         *.Get the parents linked or associated to a student
+         */
         List<Parent> linkedParents = parentRepo.findParentsByStudentId(student.getId());
 
         if (linkedParents.size() > 1) {
